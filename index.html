@@ -1,0 +1,1064 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Quiz — Cas N°1 : Piéton Mme LEFEBVRE</title>
+  <style>
+    :root {
+      --tmk-blue: #0f4c81;
+      --tmk-blue-dark: #0a3558;
+      --tmk-gold: #c8a96b;
+      --tmk-white: #ffffff;
+      --tmk-text: #1f2937;
+      --tmk-muted: #6b7280;
+      --tmk-border: #d9e2ec;
+      --tmk-success: #1f7a3e;
+      --tmk-success-bg: #eefaf1;
+      --tmk-error: #b42318;
+      --tmk-error-bg: #fef3f2;
+      --tmk-card: #f9fbfd;
+      --tmk-green: #16a34a;
+      --tmk-orange: #ea580c;
+      --tmk-red: #dc2626;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: linear-gradient(180deg, #eef3f8 0%, #f8fafc 100%);
+      color: var(--tmk-text);
+    }
+
+    .tmk-header {
+      background: var(--tmk-white);
+      border-bottom: 4px solid var(--tmk-gold);
+      text-align: center;
+      padding: 18px 15px;
+      box-shadow: 0 2px 8px rgba(15, 76, 129, 0.08);
+    }
+
+    .tmk-header img {
+      max-width: 220px;
+      width: 100%;
+      height: auto;
+    }
+
+    .fictif-banner {
+      background: #b91c1c;
+      color: white;
+      text-align: center;
+      padding: 7px 16px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .07em;
+      text-transform: uppercase;
+    }
+
+    .page-wrap {
+      max-width: 980px;
+      margin: 32px auto;
+      padding: 0 20px;
+    }
+
+    .quiz-shell {
+      background: var(--tmk-white);
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(15, 76, 129, 0.10);
+      overflow: hidden;
+      border: 1px solid #e8eef5;
+    }
+
+    .hero {
+      background: linear-gradient(135deg, var(--tmk-blue) 0%, var(--tmk-blue-dark) 100%);
+      color: white;
+      padding: 30px;
+    }
+
+    .hero h1 {
+      margin: 0 0 10px;
+      font-size: 28px;
+      line-height: 1.2;
+    }
+
+    .hero p {
+      margin: 0;
+      font-size: 16px;
+      line-height: 1.6;
+      color: rgba(255, 255, 255, 0.92);
+    }
+
+    .hero-badge {
+      display: inline-block;
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.18);
+      color: #fff;
+      padding: 8px 14px;
+      border-radius: 999px;
+      font-size: 13px;
+      margin-bottom: 14px;
+      letter-spacing: 0.2px;
+    }
+
+    .content { padding: 30px; }
+
+    .intro {
+      background: #f1f7fc;
+      border-left: 5px solid var(--tmk-blue);
+      border-radius: 10px;
+      padding: 18px;
+      margin-bottom: 25px;
+      line-height: 1.6;
+    }
+
+    .progress-bar {
+      background: #e5e7eb;
+      border-radius: 10px;
+      height: 8px;
+      margin-bottom: 20px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      background: linear-gradient(90deg, var(--tmk-green), var(--tmk-blue));
+      height: 100%;
+      width: 0%;
+      transition: width 0.3s ease;
+      border-radius: 10px;
+    }
+
+    .progress-text {
+      text-align: center;
+      font-size: 14px;
+      color: var(--tmk-muted);
+      margin-bottom: 15px;
+    }
+
+    .question {
+      background: var(--tmk-card);
+      border: 1px solid var(--tmk-border);
+      border-radius: 14px;
+      padding: 22px;
+      margin-bottom: 20px;
+    }
+
+    .question.answered-correct { border-left: 5px solid var(--tmk-success); }
+    .question.answered-incorrect { border-left: 5px solid var(--tmk-error); }
+
+    .question-number {
+      display: inline-block;
+      background: var(--tmk-blue);
+      color: white;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: bold;
+      margin-bottom: 12px;
+      margin-right: 6px;
+    }
+
+    .question h3 {
+      margin: 0 0 14px;
+      font-size: 17px;
+      color: var(--tmk-blue-dark);
+      line-height: 1.5;
+    }
+
+    .options { display: grid; gap: 10px; }
+
+    .option {
+      display: block;
+      background: #fff;
+      border: 2px solid #d7e3ef;
+      border-radius: 10px;
+      padding: 12px 14px;
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+
+    .option:hover:not(.disabled) {
+      border-color: var(--tmk-blue);
+      background: #f8fbfe;
+    }
+
+    .option.selected { border-color: var(--tmk-blue); background: #e8f4fc; }
+    .option.correct { border-color: var(--tmk-success); background: var(--tmk-success-bg); }
+    .option.incorrect { border-color: var(--tmk-error); background: var(--tmk-error-bg); }
+    .option.disabled { cursor: default; opacity: 0.7; }
+
+    .option input {
+      margin-right: 10px;
+      transform: translateY(1px);
+    }
+
+    .feedback {
+      margin-top: 12px;
+      padding: 12px;
+      border-radius: 8px;
+      font-size: 14px;
+      line-height: 1.5;
+      display: none;
+    }
+    .feedback.show { display: block; }
+    .feedback.correct {
+      background: var(--tmk-success-bg);
+      border: 1px solid var(--tmk-success);
+      color: #166534;
+    }
+    .feedback.incorrect {
+      background: var(--tmk-error-bg);
+      border: 1px solid var(--tmk-error);
+      color: #991b1b;
+    }
+
+    .actions {
+      margin-top: 28px;
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      border: none;
+      border-radius: 10px;
+      padding: 14px 22px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.2s ease;
+    }
+    .btn-primary { background: var(--tmk-blue); color: white; }
+    .btn-primary:hover { background: var(--tmk-blue-dark); }
+    .btn-primary:disabled { background: #9ca3af; cursor: not-allowed; }
+    .btn-secondary {
+      background: #eef2f7;
+      color: var(--tmk-blue-dark);
+      border: 1px solid #d6e0ea;
+    }
+    .btn-secondary:hover { background: #e4ebf3; }
+
+    .btn-export {
+      background: var(--tmk-success);
+      color: white;
+    }
+    .btn-export:hover { background: #166534; }
+
+    .results {
+      display: none;
+      margin-top: 30px;
+      background: #fcfdff;
+      border: 1px solid #dbe7f3;
+      border-radius: 14px;
+      padding: 24px;
+    }
+
+    .score-box {
+      background: linear-gradient(135deg, #eef6fc 0%, #f8fbff 100%);
+      border: 1px solid #d6e5f2;
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 22px;
+      text-align: center;
+    }
+
+    .score-circle {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 16px;
+      font-size: 32px;
+      font-weight: bold;
+      color: white;
+    }
+    .score-circle.excellent { background: linear-gradient(135deg, var(--tmk-green), #22c55e); }
+    .score-circle.good { background: linear-gradient(135deg, var(--tmk-blue), #3b82f6); }
+    .score-circle.average { background: linear-gradient(135deg, var(--tmk-orange), #f97316); }
+    .score-circle.low { background: linear-gradient(135deg, var(--tmk-red), #ef4444); }
+
+    .score-box h2 { margin: 0 0 8px; color: var(--tmk-blue-dark); font-size: 24px; }
+    .score-box p { margin: 0; color: var(--tmk-muted); line-height: 1.5; }
+
+    .result-item {
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 16px;
+      border-left: 6px solid #cbd5e1;
+      background: white;
+      box-shadow: 0 2px 8px rgba(15, 76, 129, 0.04);
+    }
+    .result-item.correct { border-left-color: var(--tmk-success); background: var(--tmk-success-bg); }
+    .result-item.incorrect { border-left-color: var(--tmk-error); background: var(--tmk-error-bg); }
+
+    .result-title { font-weight: bold; margin-bottom: 8px; color: #111827; }
+    .result-question { font-size: 15px; margin-bottom: 8px; color: #374151; }
+    .answer { font-weight: bold; margin-bottom: 6px; color: var(--tmk-success); }
+    .user-answer { font-size: 14px; color: var(--tmk-error); margin-bottom: 6px; }
+    .result-explication {
+      font-size: 13px;
+      color: #374151;
+      margin-top: 8px;
+      padding-top: 8px;
+      border-top: 1px dashed #cbd5e1;
+      line-height: 1.5;
+    }
+
+    .footer-note {
+      margin-top: 18px;
+      padding-top: 14px;
+      border-top: 1px solid #e5edf5;
+      color: var(--tmk-muted);
+      font-style: italic;
+      line-height: 1.5;
+    }
+
+    .tmk-footer {
+      text-align: center;
+      color: #6b7280;
+      padding: 24px 16px 36px;
+      font-size: 14px;
+    }
+
+    .category-tag {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+    .category-tag.green { background: #dcfce7; color: #166534; }
+    .category-tag.orange { background: #ffedd5; color: #9a3412; }
+    .category-tag.blue { background: #dbeafe; color: #1e40af; }
+    .category-tag.purple { background: #f3e8ff; color: #6b21a8; }
+    .category-tag.red { background: #fee2e2; color: #991b1b; }
+
+    .scenario-box {
+      background: #fffbeb;
+      border: 1px solid #fde68a;
+      border-left: 5px solid #d97706;
+      border-radius: 10px;
+      padding: 16px 18px;
+      margin-bottom: 22px;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+    .scenario-box strong { color: #92400e; }
+
+    @media (max-width: 700px) {
+      .hero { padding: 24px 20px; }
+      .content { padding: 20px; }
+      .hero h1 { font-size: 22px; }
+      .question h3 { font-size: 16px; }
+    }
+
+    /* ═══════ STYLES POUR L'IMPRESSION PDF ═══════ */
+    @media print {
+      @page {
+        size: A4;
+        margin: 12mm 14mm 14mm 14mm;
+      }
+
+      body {
+        background: white !important;
+        font-size: 10pt;
+        color: #000;
+      }
+
+      /* Cacher les éléments non pertinents pour le PDF */
+      .fictif-banner,
+      .tmk-header,
+      .scenario-box,
+      .intro,
+      .progress-text,
+      .progress-bar,
+      .actions,
+      #exportHelp,
+      #quizForm > .question,
+      .tmk-footer {
+        display: none !important;
+      }
+
+      /* La structure de la page */
+      .page-wrap {
+        max-width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+      }
+
+      .quiz-shell {
+        box-shadow: none !important;
+        border: none !important;
+        border-radius: 0 !important;
+      }
+
+      /* En-tête PDF dédié injecté par JS */
+      .pdf-header {
+        display: block !important;
+        text-align: center;
+        border-bottom: 2px solid #c8a96b;
+        padding-bottom: 6mm;
+        margin-bottom: 6mm;
+      }
+      .pdf-header .brand {
+        font-size: 16pt;
+        font-weight: bold;
+        color: #0f4c81;
+        letter-spacing: 0.5pt;
+      }
+      .pdf-header .module {
+        font-size: 9pt;
+        color: #6b7280;
+        margin-top: 2px;
+      }
+      .pdf-header .doc-type {
+        display: inline-block;
+        margin-top: 5px;
+        background: #b91c1c;
+        color: white !important;
+        padding: 2px 12px;
+        border-radius: 3px;
+        font-size: 7.5pt;
+        font-weight: bold;
+        letter-spacing: 0.8pt;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+
+      /* En-tête du quiz (la zone bleue) */
+      .hero {
+        background: #0f4c81 !important;
+        color: white !important;
+        padding: 10px 14px !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+        margin-bottom: 6mm;
+        page-break-inside: avoid;
+      }
+      .hero h1 { font-size: 14pt !important; margin: 0 0 4px !important; }
+      .hero p { font-size: 9pt !important; margin: 0 !important; }
+      .hero p strong { color: white !important; }
+      .hero-badge { font-size: 7.5pt !important; margin-bottom: 6px; padding: 3px 9px; background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.25); }
+
+      .content {
+        padding: 0 !important;
+      }
+
+      /* Bloc meta injecté dynamiquement */
+      .pdf-meta {
+        display: block !important;
+        background: #f1f7fc !important;
+        border: 1px solid #d9e2ec;
+        border-left: 4px solid #0f4c81;
+        border-radius: 4px;
+        padding: 8px 12px;
+        margin-bottom: 6mm;
+        font-size: 9pt;
+        line-height: 1.6;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+        page-break-inside: avoid;
+      }
+      .pdf-meta strong { color: #0f4c81; }
+
+      /* Box de score */
+      .score-box {
+        page-break-inside: avoid;
+        background: #eef6fc !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+        padding: 12px !important;
+        margin-bottom: 6mm !important;
+        border: 1px solid #d6e5f2;
+        border-radius: 6px;
+      }
+      .score-circle {
+        width: 70px !important;
+        height: 70px !important;
+        font-size: 16pt !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+      .score-box h2 { font-size: 13pt !important; margin: 8px 0 4px; }
+      .score-box p { font-size: 9.5pt !important; }
+
+      .results {
+        display: block !important;
+        background: white !important;
+        border: none !important;
+        padding: 0 !important;
+        margin: 0 !important;
+      }
+
+      /* Titre des détails */
+      .results-detail-title {
+        display: block !important;
+        font-size: 11pt;
+        font-weight: bold;
+        color: #0f4c81;
+        margin: 6mm 0 3mm;
+        padding-bottom: 2mm;
+        border-bottom: 1px solid #c8a96b;
+      }
+
+      .result-item {
+        page-break-inside: avoid;
+        margin-bottom: 3mm !important;
+        padding: 8px 10px !important;
+        box-shadow: none !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+        border-radius: 4px;
+      }
+
+      .result-item.correct { background: #eefaf1 !important; border-left: 4px solid #1f7a3e !important; }
+      .result-item.incorrect { background: #fef3f2 !important; border-left: 4px solid #b42318 !important; }
+
+      .result-title { font-size: 9.5pt !important; margin-bottom: 3px !important; }
+      .result-question { font-size: 9.5pt !important; margin-bottom: 4px !important; }
+      .answer { font-size: 9pt !important; margin-bottom: 3px !important; }
+      .user-answer { font-size: 9pt !important; margin-bottom: 3px !important; }
+      .result-explication {
+        font-size: 8.5pt !important;
+        margin-top: 4px !important;
+        padding-top: 4px !important;
+        line-height: 1.4 !important;
+      }
+
+      /* Bandeau de pied de page imprimé en bas du dernier bloc */
+      .pdf-footer {
+        display: block !important;
+        text-align: center;
+        margin-top: 6mm;
+        padding-top: 3mm;
+        border-top: 1px solid #b91c1c;
+        font-size: 8pt;
+        color: #b91c1c;
+        font-weight: bold;
+      }
+      .pdf-footer .sub {
+        font-weight: normal;
+        font-style: italic;
+        font-size: 7pt;
+        color: #6b7280;
+        margin-top: 1mm;
+      }
+
+      /* Note de bas de page (déjà existante) */
+      .footer-note {
+        font-size: 7.5pt !important;
+        margin-top: 3mm !important;
+      }
+
+      /* Filigrane fictif - un seul, central */
+      body::before {
+        content: "DOCUMENT FICTIF";
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%) rotate(-45deg);
+        font-size: 50pt;
+        font-weight: bold;
+        color: rgba(220, 38, 38, 0.06);
+        z-index: -1;
+        pointer-events: none;
+        white-space: nowrap;
+      }
+    }
+
+    /* Cacher les éléments PDF en mode écran */
+    .pdf-meta, .pdf-header, .pdf-footer, .results-detail-title { display: none; }
+  </style>
+</head>
+<body>
+
+  <div class="fictif-banner">Cas pédagogique fictif — Ne constitue pas un document officiel</div>
+
+  <div class="tmk-header">
+    <img src="assets/logo.png" alt="TMK Performances">
+  </div>
+
+  <div class="page-wrap">
+    <div class="quiz-shell">
+      <div class="hero">
+        <div class="hero-badge">Cas pratique N°1 • Niveau simple • Sinistres corporels</div>
+        <h1>Quiz — Cas N°1 : Piéton Mme LEFEBVRE</h1>
+        <p>
+          <strong>Protection absolue du piéton — Loi Badinter</strong>
+        </p>
+      </div>
+
+      <div class="content">
+
+        <div class="scenario-box">
+          <strong>Rappel du cas :</strong> Le 13 janvier 2026, Mme Françoise LEFEBVRE, 62 ans, retraitée, est renversée par une Renault Clio conduite par M. Pascal DURAND alors qu'elle traverse sur un passage piéton (feu vert pour les piétons). Le conducteur est assuré chez ASSURÉCLAIR. Le dossier contient un PV de police, un CMI du CHU de Lille (ITT : 120 jours), une déclaration de sinistre et une offre provisionnelle.
+        </div>
+
+        <div class="intro">
+          Ce quiz comporte <strong>12 questions</strong> sur le cas pratique N°1. Répondez à chaque question puis cliquez sur <strong>« Valider mes réponses »</strong> pour obtenir votre score et les corrections détaillées.
+        </div>
+
+        <div class="progress-text">Question <span id="answeredCount">0</span> / 12 répondues</div>
+        <div class="progress-bar">
+          <div class="progress-fill" id="progressFill"></div>
+        </div>
+
+        <form id="quizForm">
+
+          <!-- Question 1 -->
+          <div class="question" data-question="q1">
+            <span class="question-number">Question 1</span>
+            <span class="category-tag green">Qualification de la victime</span>
+            <h3>Quelle est la qualification juridique de Mme LEFEBVRE dans cet accident ?</h3>
+            <div class="options">
+              <label class="option"><input type="radio" name="q1" value="a"> Conductrice d'un VTM</label>
+              <label class="option"><input type="radio" name="q1" value="b"> Victime non-conductrice (piétonne)</label>
+              <label class="option"><input type="radio" name="q1" value="c"> Victime par ricochet</label>
+            </div>
+            <div class="feedback"></div>
+          </div>
+
+          <!-- Question 2 -->
+          <div class="question" data-question="q2">
+            <span class="question-number">Question 2</span>
+            <span class="category-tag orange">Protection absolue</span>
+            <h3>Mme LEFEBVRE ayant 62 ans, bénéficie-t-elle de la protection absolue réservée à certaines victimes ?</h3>
+            <div class="options">
+              <label class="option"><input type="radio" name="q2" value="a"> Oui, en tant que piétonne elle bénéficie toujours de la protection absolue</label>
+              <label class="option"><input type="radio" name="q2" value="b"> Non, la protection absolue est réservée aux < 16 ans, > 70 ans et titulaires d'un titre d'invalidité ≥ 80 %</label>
+              <label class="option"><input type="radio" name="q2" value="c"> Oui, en tant que retraitée elle y a droit automatiquement</label>
+            </div>
+            <div class="feedback"></div>
+          </div>
+
+          <!-- Question 3 -->
+          <div class="question" data-question="q3">
+            <span class="question-number">Question 3</span>
+            <span class="category-tag orange">Opposabilité de la faute</span>
+            <h3>Peut-on opposer une faute à Mme LEFEBVRE pour réduire son indemnisation ?</h3>
+            <div class="options">
+              <label class="option"><input type="radio" name="q3" value="a"> Oui, toute imprudence même légère peut réduire son indemnisation</label>
+              <label class="option"><input type="radio" name="q3" value="b"> Non, en qualité de piétonne seule une faute inexcusable cause exclusive de l'accident lui serait opposable</label>
+              <label class="option"><input type="radio" name="q3" value="c"> Oui, son âge avancé constitue une circonstance aggravante</label>
+            </div>
+            <div class="feedback"></div>
+          </div>
+
+          <!-- Question 4 -->
+          <div class="question" data-question="q4">
+            <span class="question-number">Question 4</span>
+            <span class="category-tag purple">Délais légaux</span>
+            <h3>L'accident est survenu le 13/01/2026. Dans quel délai l'assureur doit-il présenter son offre provisionnelle ?</h3>
+            <div class="options">
+              <label class="option"><input type="radio" name="q4" value="a"> Dans un délai de 3 mois à compter de l'accident</label>
+              <label class="option"><input type="radio" name="q4" value="b"> Dans un délai de 8 mois à compter de l'accident</label>
+              <label class="option"><input type="radio" name="q4" value="c"> Dans un délai de 12 mois à compter de l'accident</label>
+            </div>
+            <div class="feedback"></div>
+          </div>
+
+          <!-- Question 5 -->
+          <div class="question" data-question="q5">
+            <span class="question-number">Question 5</span>
+            <span class="category-tag purple">Délais légaux</span>
+            <h3>Que se passe-t-il si l'assureur dépasse le délai légal d'offre ?</h3>
+            <div class="options">
+              <label class="option"><input type="radio" name="q5" value="a"> Il doit verser une amende forfaitaire à la victime</label>
+              <label class="option"><input type="radio" name="q5" value="b"> L'indemnité produit des intérêts au double du taux légal jusqu'à l'offre effective</label>
+              <label class="option"><input type="radio" name="q5" value="c"> Le dossier est automatiquement transmis au FGAO</label>
+            </div>
+            <div class="feedback"></div>
+          </div>
+
+          <!-- Question 6 -->
+          <div class="question" data-question="q6">
+            <span class="question-number">Question 6</span>
+            <span class="category-tag blue">Pièces du dossier</span>
+            <h3>Parmi les 7 éléments indispensables à l'ouverture du dossier, lequel est remplacé ici par une attestation de pension CNAV ?</h3>
+            <div class="options">
+              <label class="option"><input type="radio" name="q6" value="a"> Le certificat médical initial</label>
+              <label class="option"><input type="radio" name="q6" value="b"> L'attestation employeur (Mme LEFEBVRE étant retraitée)</label>
+              <label class="option"><input type="radio" name="q6" value="c"> Le procès-verbal de police</label>
+            </div>
+            <div class="feedback"></div>
+          </div>
+
+          <!-- Question 7 -->
+          <div class="question" data-question="q7">
+            <span class="question-number">Question 7</span>
+            <span class="category-tag orange">Droit à indemnisation</span>
+            <h3>Quel est l'étendue du droit à indemnisation de Mme LEFEBVRE ?</h3>
+            <div class="options">
+              <label class="option"><input type="radio" name="q7" value="a"> Réparation intégrale de tous ses préjudices corporels</label>
+              <label class="option"><input type="radio" name="q7" value="b"> Réparation plafonnée selon le contrat d'ASSURÉCLAIR</label>
+              <label class="option"><input type="radio" name="q7" value="c"> Réparation réduite de 30 % en raison de son âge</label>
+            </div>
+            <div class="feedback"></div>
+          </div>
+
+          <!-- Question 8 -->
+          <div class="question" data-question="q8">
+            <span class="question-number">Question 8</span>
+            <span class="category-tag blue">Postes Dintilhac</span>
+            <h3>Compte tenu des lésions décrites (fracture fémur, TC léger, plaies), quel poste Dintilhac sera prépondérant ?</h3>
+            <div class="options">
+              <label class="option"><input type="radio" name="q8" value="a"> Le préjudice scolaire (Mme LEFEBVRE suit des cours du soir)</label>
+              <label class="option"><input type="radio" name="q8" value="b"> Le DFT, les souffrances endurées, l'assistance tierce personne et potentiellement un DFP</label>
+              <label class="option"><input type="radio" name="q8" value="c"> La perte de gains professionnels futurs (PGPF)</label>
+            </div>
+            <div class="feedback"></div>
+          </div>
+
+          <!-- Question 9 -->
+          <div class="question" data-question="q9">
+            <span class="question-number">Question 9</span>
+            <span class="category-tag green">Droits de la victime</span>
+            <h3>Mme LEFEBVRE accepte l'offre provisionnelle le 20 mars 2026. Dispose-t-elle encore d'un recours ?</h3>
+            <div class="options">
+              <label class="option"><input type="radio" name="q9" value="a"> Non, l'acceptation est définitive</label>
+              <label class="option"><input type="radio" name="q9" value="b"> Oui, elle dispose de 15 jours pour se rétracter</label>
+              <label class="option"><input type="radio" name="q9" value="c"> Oui, elle dispose de 30 jours pour contester en justice</label>
+            </div>
+            <div class="feedback"></div>
+          </div>
+
+          <!-- Question 10 -->
+          <div class="question" data-question="q10">
+            <span class="question-number">Question 10</span>
+            <span class="category-tag blue">Circonstances</span>
+            <h3>Le PV de police mentionne que M. DURAND a été « ébloui par le soleil couchant ». Cela a-t-il une incidence sur le droit à indemnisation de Mme LEFEBVRE ?</h3>
+            <div class="options">
+              <label class="option"><input type="radio" name="q10" value="a"> Oui, c'est un cas de force majeure qui exonère l'assureur</label>
+              <label class="option"><input type="radio" name="q10" value="b"> Non, la faute ou non du conducteur n'est pas opposable au piéton-victime</label>
+              <label class="option"><input type="radio" name="q10" value="c"> Oui, l'indemnisation sera réduite de moitié</label>
+            </div>
+            <div class="feedback"></div>
+          </div>
+
+          <!-- Question 11 -->
+          <div class="question" data-question="q11">
+            <span class="question-number">Question 11</span>
+            <span class="category-tag green">Implication du véhicule</span>
+            <h3>Quelle est la condition fondamentale pour que la loi Badinter s'applique à cet accident ?</h3>
+            <div class="options">
+              <label class="option"><input type="radio" name="q11" value="a"> L'implication d'un véhicule terrestre à moteur (VTM)</label>
+              <label class="option"><input type="radio" name="q11" value="b"> La preuve d'une faute du conducteur</label>
+              <label class="option"><input type="radio" name="q11" value="c"> Un contact physique entre le véhicule et la victime</label>
+            </div>
+            <div class="feedback"></div>
+          </div>
+
+          <!-- Question 12 -->
+          <div class="question" data-question="q12">
+            <span class="question-number">Question 12</span>
+            <span class="category-tag blue">Rôle du gestionnaire</span>
+            <h3>Quel est le rôle essentiel du gestionnaire ASSURÉCLAIR à réception de la déclaration ?</h3>
+            <div class="options">
+              <label class="option"><input type="radio" name="q12" value="a"> Chercher à établir une faute de la victime pour limiter l'indemnisation</label>
+              <label class="option"><input type="radio" name="q12" value="b"> Ouvrir le dossier, informer la victime de ses droits, missionner un expert et préparer l'offre provisionnelle dans les délais</label>
+              <label class="option"><input type="radio" name="q12" value="c"> Attendre que la victime produise toutes les pièces avant d'ouvrir le dossier</label>
+            </div>
+            <div class="feedback"></div>
+          </div>
+
+          <div class="actions">
+            <button type="button" class="btn-primary" id="submitBtn" onclick="corrigerQuiz()">Valider mes réponses</button>
+            <button type="button" class="btn-secondary" onclick="reinitialiserQuiz()">Recommencer</button>
+            <button type="button" class="btn-export" id="exportBtn" onclick="exporterPDF()" style="display:none;" title="Ouvre le dialogue d'impression — choisissez « Enregistrer en PDF »">📄 Télécharger en PDF</button>
+          </div>
+          <p id="exportHelp" style="display:none; font-size: 12px; color: #6b7280; margin-top: 10px; font-style: italic;">
+            💡 Le bouton ci-dessus ouvre la boîte de dialogue d'impression de votre navigateur.
+            Choisissez <strong>« Enregistrer au format PDF »</strong> ou <strong>« Microsoft Print to PDF »</strong> comme imprimante de destination.
+          </p>
+        </form>
+
+        <div id="results" class="results"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tmk-footer">
+    © <span id="year"></span> TMK Performances — Formation Gestion des Sinistres Corporels
+  </div>
+
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    const reponsesCorrectes = {
+      q1: "b",
+      q2: "b",
+      q3: "b",
+      q4: "b",
+      q5: "b",
+      q6: "b",
+      q7: "a",
+      q8: "b",
+      q9: "b",
+      q10: "b",
+      q11: "a",
+      q12: "b",
+    };
+
+    const corrections = {
+      q1: {
+        bonne: "Victime non-conductrice (piétonne)",
+        explication: "Mme LEFEBVRE est piétonne au moment de l'accident. Elle entre dans la catégorie des <b>victimes non-conductrices</b> au sens de l'article 3 de la loi Badinter, ce qui lui ouvre le régime de protection le plus favorable."
+      },
+      q2: {
+        bonne: "Non, la protection absolue est réservée aux < 16 ans, > 70 ans et titulaires d'un titre d'invalidité ≥ 80 %",
+        explication: "La <b>protection absolue</b> (indemnisation automatique sauf recherche volontaire du dommage) est réservée aux victimes de <b>moins de 16 ans</b>, de <b>plus de 70 ans</b>, ou titulaires d'un titre d'invalidité ≥ 80 %. Mme LEFEBVRE, 62 ans, ne remplit aucun de ces critères. Elle reste néanmoins victime non-conductrice, donc très protégée : seule une faute inexcusable cause exclusive pourrait lui être opposée."
+      },
+      q3: {
+        bonne: "Non, en qualité de piétonne seule une faute inexcusable cause exclusive de l'accident lui serait opposable",
+        explication: "La loi Badinter prévoit qu'une victime non-conductrice ne peut se voir opposer que la <b>faute inexcusable</b>, à condition qu'elle soit la <b>cause exclusive</b> de l'accident. En l'espèce, Mme LEFEBVRE traversait sur un passage piéton avec le feu vert : aucune faute ne peut lui être reprochée, encore moins une faute inexcusable."
+      },
+      q4: {
+        bonne: "Dans un délai de 8 mois à compter de l'accident",
+        explication: "L'article L.211-9 du Code des assurances impose à l'assureur de présenter une <b>offre provisionnelle dans les 8 mois</b> suivant l'accident. Le délai expire donc le <b>13/09/2026</b>. L'offre ASSURÉCLAIR datée du 12/03/2026 (soit environ 2 mois après) respecte largement ce délai."
+      },
+      q5: {
+        bonne: "L'indemnité produit des intérêts au double du taux légal jusqu'à l'offre effective",
+        explication: "La sanction du retard est prévue par l'article L.211-13 du Code des assurances : l'indemnité offerte tardivement produit des <b>intérêts de plein droit au double du taux légal</b> jusqu'à la date de l'offre effective. Cette sanction pèse lourd et incite l'assureur à respecter ses délais."
+      },
+      q6: {
+        bonne: "L'attestation employeur (Mme LEFEBVRE étant retraitée)",
+        explication: "L'<b>attestation employeur</b> sert normalement à évaluer les pertes de gains professionnels actuels (PGPA). Mme LEFEBVRE étant retraitée, cette pièce n'a pas de sens. L'équivalent patrimonial est l'<b>attestation de pension CNAV</b>, qui permet de mesurer l'incidence du sinistre sur la situation économique de la victime."
+      },
+      q7: {
+        bonne: "Réparation intégrale de tous ses préjudices corporels",
+        explication: "La loi Badinter consacre le principe de <b>réparation intégrale</b> des préjudices corporels. Aucune faute n'étant opposable à Mme LEFEBVRE, elle a droit à la réparation intégrale de l'ensemble de ses préjudices (patrimoniaux et extrapatrimoniaux, temporaires et permanents) sans plafond ni abattement."
+      },
+      q8: {
+        bonne: "Le DFT, les souffrances endurées, l'assistance tierce personne et potentiellement un DFP",
+        explication: "Une fracture per-trochantérienne ostéosynthésée chez une personne de 62 ans mobilise principalement : le <b>Déficit Fonctionnel Temporaire</b> (hospitalisation + rééducation), les <b>Souffrances Endurées</b> (chirurgie, douleurs), l'<b>Assistance Tierce Personne</b> temporaire (aide au domicile), et un probable <b>DFP</b> (raideur résiduelle). La retraitée ne subit pas de PGPF."
+      },
+      q9: {
+        bonne: "Oui, elle dispose de 15 jours pour se rétracter",
+        explication: "L'article L.211-16 du Code des assurances accorde à la victime un <b>délai de rétractation de 15 jours</b> à compter de la date d'acceptation d'une offre. Cette protection permet de se prémunir contre une acceptation précipitée."
+      },
+      q10: {
+        bonne: "Non, la faute ou non du conducteur n'est pas opposable au piéton-victime",
+        explication: "Sous le régime de la loi Badinter, la <b>faute ou non du conducteur est indifférente</b> pour l'indemnisation de la victime non-conductrice. Seule l'implication du véhicule suffit. Par ailleurs, l'éblouissement par le soleil n'est <b>pas un cas de force majeure</b> au sens de la loi Badinter (Cass. 2e civ., jurisprudence constante)."
+      },
+      q11: {
+        bonne: "L'implication d'un véhicule terrestre à moteur (VTM)",
+        explication: "La loi Badinter repose sur la seule <b>implication d'un VTM</b>. Ici, la Renault Clio est bien un VTM et elle a percuté Mme LEFEBVRE : les conditions sont réunies. Notons que le contact physique n'est pas exigé (un freinage brusque provoqué par un véhicule suffit à caractériser son implication)."
+      },
+      q12: {
+        bonne: "Ouvrir le dossier, informer la victime de ses droits, missionner un expert et préparer l'offre provisionnelle dans les délais",
+        explication: "Le gestionnaire a une obligation active : <b>ouvrir le dossier</b> dès connaissance de l'accident, <b>informer la victime de ses droits</b> (art. L.211-10 C. ass.), <b>missionner un médecin-expert</b>, et <b>préparer l'offre provisionnelle</b> dans le délai de 8 mois. L'assureur ne peut attendre passivement : il est garant d'une indemnisation rapide."
+      },
+    };
+
+    function updateProgress() {
+      let answered = 0;
+      const total = Object.keys(reponsesCorrectes).length;
+      for (let q in reponsesCorrectes) {
+        if (document.querySelector(`input[name="${q}"]:checked`)) answered++;
+      }
+      document.getElementById('answeredCount').textContent = answered;
+      document.getElementById('progressFill').style.width = `${(answered / total) * 100}%`;
+    }
+
+    document.querySelectorAll('input[type="radio"]').forEach(radio => {
+      radio.addEventListener('change', updateProgress);
+    });
+
+    // Stockage des résultats pour l'export PDF
+    let resultatsQuiz = null;
+
+    function corrigerQuiz() {
+      let score = 0;
+      const total = Object.keys(reponsesCorrectes).length;
+      let html = "";
+      const detailsResultats = [];
+
+      for (let question in reponsesCorrectes) {
+        const questionDiv = document.querySelector(`[data-question="${question}"]`);
+        const reponseUtilisateur = document.querySelector(`input[name="${question}"]:checked`);
+        const estCorrect = reponseUtilisateur && reponseUtilisateur.value === reponsesCorrectes[question];
+        const feedback = questionDiv.querySelector('.feedback');
+        const questionText = questionDiv.querySelector('h3').textContent;
+
+        if (estCorrect) {
+          score++;
+          questionDiv.classList.add('answered-correct');
+          feedback.className = 'feedback show correct';
+          feedback.innerHTML = `<strong>✓ Correct !</strong> ${corrections[question].explication}`;
+        } else {
+          questionDiv.classList.add('answered-incorrect');
+          feedback.className = 'feedback show incorrect';
+          feedback.innerHTML = `<strong>✗ Incorrect.</strong> La bonne réponse était : ${corrections[question].bonne}<br>${corrections[question].explication}`;
+        }
+
+        questionDiv.querySelectorAll('.option').forEach(opt => {
+          opt.classList.add('disabled');
+          const input = opt.querySelector('input');
+          if (input.value === reponsesCorrectes[question]) {
+            opt.classList.add('correct');
+          } else if (reponseUtilisateur && input.value === reponseUtilisateur.value && !estCorrect) {
+            opt.classList.add('incorrect');
+          }
+        });
+
+        // Réponse choisie en texte
+        let reponseTexte = "Aucune réponse";
+        if (reponseUtilisateur) {
+          reponseTexte = reponseUtilisateur.parentElement.textContent.trim();
+        }
+
+        detailsResultats.push({
+          numero: question.toUpperCase(),
+          questionTexte: questionText,
+          estCorrect: estCorrect,
+          bonneReponse: corrections[question].bonne,
+          reponseUtilisateur: reponseTexte,
+          explication: corrections[question].explication
+        });
+
+        html += `
+          <div class="result-item ${estCorrect ? 'correct' : 'incorrect'}">
+            <div class="result-title">${question.toUpperCase()} — ${estCorrect ? '✓ Correct' : '✗ Incorrect'}</div>
+            <div class="result-question">${questionText}</div>
+            <div class="answer">Bonne réponse : ${corrections[question].bonne}</div>
+            ${!estCorrect && reponseUtilisateur ? `<div class="user-answer">Votre réponse : ${reponseUtilisateur.parentElement.textContent.trim()}</div>` : ''}
+            <div class="result-explication"><strong>Explication :</strong> ${corrections[question].explication}</div>
+          </div>
+        `;
+      }
+
+      const pourcentage = Math.round((score / total) * 100);
+      const noteSur20 = Math.round((score / total) * 20 * 10) / 10;  // Une décimale
+      let appreciation = "";
+      let scoreClass = "";
+      if (pourcentage >= 85) {
+        appreciation = "Excellent travail ! Vous maîtrisez parfaitement les enjeux de ce dossier. Votre analyse est rigoureuse et témoigne d'une solide compréhension des mécanismes juridiques et pratiques. Vous êtes prêt(e) à gérer ce type de situation en autonomie.";
+        scoreClass = "excellent";
+      } else if (pourcentage >= 70) {
+        appreciation = "Bon niveau, bravo ! Vous avez intégré les notions essentielles et vos réflexes professionnels sont bons. Quelques points méritent encore d'être consolidés — relisez attentivement les explications pour franchir le cap.";
+        scoreClass = "good";
+      } else if (pourcentage >= 50) {
+        appreciation = "Des bases réelles sur lesquelles construire. Certaines subtilités du dossier demandent encore à être approfondies, c'est tout l'intérêt de la formation. Prenez le temps de revoir les corrections : chaque dossier vous fera progresser.";
+        scoreClass = "average";
+      } else {
+        appreciation = "Pas d'inquiétude : ce quiz est avant tout un outil d'apprentissage, et les cas pratiques sont conçus pour vous faire réfléchir. Les corrections détaillées ci-dessous vous donneront les clés pour mieux aborder ce type de dossier. Reprenez tranquillement, vous progresserez à coup sûr !";
+        scoreClass = "low";
+      }
+
+      // Stockage pour l'export PDF
+      resultatsQuiz = {
+        titre: document.querySelector('.hero h1').textContent,
+        sousTitre: document.querySelector('.hero p strong').textContent,
+        score: score,
+        total: total,
+        pourcentage: pourcentage,
+        noteSur20: noteSur20,
+        appreciation: appreciation,
+        details: detailsResultats,
+        date: new Date().toLocaleDateString('fr-FR', { day: '2-digit', month: 'long', year: 'numeric' })
+      };
+
+      document.getElementById("results").innerHTML = `
+        <div class="score-box">
+          <div class="score-circle ${scoreClass}">${score}/${total}</div>
+          <h2>Votre score : ${pourcentage}% — Note : ${noteSur20}/20</h2>
+          <p>${appreciation}</p>
+        </div>
+        ${html}
+        <div class="footer-note">
+          Ce quiz porte sur un cas pratique fictif. Les noms, dates et situations sont purement pédagogiques.
+          Prenez le temps de relire les corrections pour consolider vos acquis.
+        </div>
+      `;
+
+      document.getElementById("results").style.display = "block";
+      document.getElementById("submitBtn").disabled = true;
+      document.getElementById("exportBtn").style.display = "inline-block";
+      document.getElementById("exportHelp").style.display = "block";
+
+      window.scrollTo({ top: document.getElementById("results").offsetTop - 20, behavior: "smooth" });
+    }
+
+    function exporterPDF() {
+      if (!resultatsQuiz) return;
+
+      // Nettoyer les anciennes injections
+      document.querySelectorAll('.pdf-header, .pdf-meta, .pdf-footer, .results-detail-title')
+        .forEach(el => el.remove());
+
+      const resultsBox = document.getElementById('results');
+      const scoreBox = resultsBox.querySelector('.score-box');
+
+      // 1) En-tête TMK pour le PDF (en haut de la page)
+      const headerBlock = document.createElement('div');
+      headerBlock.className = 'pdf-header';
+      headerBlock.innerHTML = `
+        <div class="brand">TMK PERFORMANCES</div>
+        <div class="module">Formation Gestion des Sinistres Corporels</div>
+        <div class="doc-type">RÉSULTATS DU QUIZ — DOCUMENT FICTIF À USAGE PÉDAGOGIQUE</div>
+      `;
+      // L'inserer en tout début de la quiz-shell
+      const shell = document.querySelector('.quiz-shell');
+      shell.insertBefore(headerBlock, shell.firstChild);
+
+      // 2) Bloc meta avec date, score, note
+      const metaBlock = document.createElement('div');
+      metaBlock.className = 'pdf-meta';
+      metaBlock.innerHTML = `
+        <strong>Date de passation :</strong> ${resultatsQuiz.date}<br>
+        <strong>Cas pratique :</strong> ${resultatsQuiz.titre}<br>
+        <strong>Note finale :</strong> ${resultatsQuiz.noteSur20} / 20 &nbsp;•&nbsp;
+        <strong>Score :</strong> ${resultatsQuiz.score} / ${resultatsQuiz.total} questions correctes (${resultatsQuiz.pourcentage} %)
+      `;
+      resultsBox.insertBefore(metaBlock, scoreBox);
+
+      // 3) Titre de la section "détail des réponses"
+      const detailTitle = document.createElement('div');
+      detailTitle.className = 'results-detail-title';
+      detailTitle.textContent = "Détail des réponses et corrections";
+      // L'insérer juste après score-box
+      scoreBox.insertAdjacentElement('afterend', detailTitle);
+
+      // 4) Pied de page de fin de document
+      const footerBlock = document.createElement('div');
+      footerBlock.className = 'pdf-footer';
+      footerBlock.innerHTML = `
+        — DOCUMENT FICTIF À USAGE PÉDAGOGIQUE —
+        <div class="sub">TMK Performances – Formation Sinistres Corporels • Les noms, dates et situations sont entièrement fictifs.</div>
+      `;
+      resultsBox.appendChild(footerBlock);
+
+      // Lancer l'impression
+      setTimeout(() => {
+        window.print();
+      }, 150);
+    }
+
+    function reinitialiserQuiz() {
+      document.getElementById("quizForm").reset();
+      document.getElementById("results").style.display = "none";
+      document.getElementById("results").innerHTML = "";
+      document.getElementById("submitBtn").disabled = false;
+      document.getElementById("exportBtn").style.display = "none";
+      document.getElementById("exportHelp").style.display = "none";
+      resultatsQuiz = null;
+      document.querySelectorAll('.question').forEach(q => {
+        q.classList.remove('answered-correct', 'answered-incorrect');
+      });
+      document.querySelectorAll('.option').forEach(opt => {
+        opt.classList.remove('disabled', 'correct', 'incorrect', 'selected');
+      });
+      document.querySelectorAll('.feedback').forEach(f => {
+        f.className = 'feedback';
+        f.innerHTML = '';
+      });
+      updateProgress();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  </script>
+</body>
+</html>
