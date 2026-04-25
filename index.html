@@ -767,12 +767,16 @@
 
           <div class="actions">
             <button type="button" class="btn-primary" id="submitBtn" onclick="corrigerQuiz()">Valider mes réponses</button>
-            <button type="button" class="btn-secondary" onclick="reinitialiserQuiz()">Recommencer</button>
+            <button type="button" class="btn-secondary" id="resetBtn" onclick="reinitialiserQuiz()">Recommencer</button>
             <button type="button" class="btn-export" id="exportBtn" onclick="exporterPDF()" style="display:none;" title="Ouvre le dialogue d'impression — choisissez « Enregistrer en PDF »">📄 Télécharger en PDF</button>
           </div>
           <p id="exportHelp" style="display:none; font-size: 12px; color: #6b7280; margin-top: 10px; font-style: italic;">
             💡 Le bouton ci-dessus ouvre la boîte de dialogue d'impression de votre navigateur.
-            Choisissez <strong>« Enregistrer au format PDF »</strong> ou <strong>« Microsoft Print to PDF »</strong> comme imprimante de destination.
+            Choisissez <strong>« Enregistrer au format PDF »</strong> ou <strong>« Microsoft Print to PDF »</strong> comme imprimante de destination.<br>
+            ⚠️ <strong>Important :</strong> le PDF ne peut être généré qu'<strong>une seule fois</strong> par session.
+          </p>
+          <p id="exportDone" style="display:none; font-size: 13px; color: #166534; margin-top: 10px; font-weight: 600; background: #dcfce7; padding: 10px 14px; border-radius: 8px; border-left: 4px solid #166534;">
+            ✓ <strong>PDF généré.</strong> Pour des raisons pédagogiques, il n'est plus possible de regénérer un nouveau PDF dans cette session, même en recommençant le quiz. Vous pouvez néanmoins refaire le quiz pour vous entraîner — vos résultats s'afficheront à l'écran.
           </p>
         </form>
 
@@ -870,6 +874,8 @@
 
     // Stockage des résultats pour l'export PDF
     let resultatsQuiz = null;
+    // État : le PDF a-t-il déjà été téléchargé dans cette session ?
+    let pdfDejaGenere = false;
 
     function corrigerQuiz() {
       let score = 0;
@@ -977,14 +983,22 @@
 
       document.getElementById("results").style.display = "block";
       document.getElementById("submitBtn").disabled = true;
-      document.getElementById("exportBtn").style.display = "inline-block";
-      document.getElementById("exportHelp").style.display = "block";
+
+      // Le bouton d'export n'est affiché que si le PDF n'a pas déjà été généré
+      // (sinon, on a refait le quiz et on doit empêcher la regénération)
+      if (!pdfDejaGenere) {
+        document.getElementById("exportBtn").style.display = "inline-block";
+        document.getElementById("exportHelp").style.display = "block";
+      } else {
+        document.getElementById("exportDone").style.display = "block";
+      }
 
       window.scrollTo({ top: document.getElementById("results").offsetTop - 20, behavior: "smooth" });
     }
 
     function exporterPDF() {
       if (!resultatsQuiz) return;
+      if (pdfDejaGenere) return;  // Sécurité supplémentaire
 
       // Nettoyer les anciennes injections
       document.querySelectorAll('.pdf-header, .pdf-meta, .pdf-footer, .results-detail-title')
@@ -1001,7 +1015,6 @@
         <div class="module">Formation Gestion des Sinistres Corporels</div>
         <div class="doc-type">RÉSULTATS DU QUIZ — DOCUMENT FICTIF À USAGE PÉDAGOGIQUE</div>
       `;
-      // L'inserer en tout début de la quiz-shell
       const shell = document.querySelector('.quiz-shell');
       shell.insertBefore(headerBlock, shell.firstChild);
 
@@ -1020,7 +1033,6 @@
       const detailTitle = document.createElement('div');
       detailTitle.className = 'results-detail-title';
       detailTitle.textContent = "Détail des réponses et corrections";
-      // L'insérer juste après score-box
       scoreBox.insertAdjacentElement('afterend', detailTitle);
 
       // 4) Pied de page de fin de document
@@ -1032,20 +1044,45 @@
       `;
       resultsBox.appendChild(footerBlock);
 
+      // Marquer comme généré AVANT d'imprimer (au cas où l'utilisateur annulerait,
+      // on considère malgré tout que le PDF a été ouvert/vu)
+      pdfDejaGenere = true;
+
       // Lancer l'impression
       setTimeout(() => {
         window.print();
+        // Après impression : masquer le bouton et afficher le message
+        document.getElementById("exportBtn").style.display = "none";
+        document.getElementById("exportHelp").style.display = "none";
+        document.getElementById("exportDone").style.display = "block";
       }, 150);
     }
 
     function reinitialiserQuiz() {
+      // Si le PDF a déjà été généré, prévenir l'utilisateur
+      if (pdfDejaGenere) {
+        const continuer = confirm(
+          "⚠️ Vous avez déjà téléchargé le PDF de vos résultats.\n\n" +
+          "Vous pouvez refaire le quiz pour vous entraîner, mais il ne sera plus possible " +
+          "de regénérer un nouveau PDF dans cette session.\n\n" +
+          "Souhaitez-vous continuer ?"
+        );
+        if (!continuer) return;
+      }
+
       document.getElementById("quizForm").reset();
       document.getElementById("results").style.display = "none";
       document.getElementById("results").innerHTML = "";
       document.getElementById("submitBtn").disabled = false;
       document.getElementById("exportBtn").style.display = "none";
       document.getElementById("exportHelp").style.display = "none";
+      document.getElementById("exportDone").style.display = "none";
+      // ATTENTION : on ne remet PAS pdfDejaGenere à false
+      // Cela garantit qu'un seul PDF peut être généré par session
       resultatsQuiz = null;
+      // Nettoyer les blocs PDF qui auraient été injectés
+      document.querySelectorAll('.pdf-header, .pdf-meta, .pdf-footer, .results-detail-title')
+        .forEach(el => el.remove());
       document.querySelectorAll('.question').forEach(q => {
         q.classList.remove('answered-correct', 'answered-incorrect');
       });
